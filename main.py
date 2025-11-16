@@ -1,6 +1,6 @@
 import logging
 from telegram.ext import Application, MessageHandler, filters
-from handlers.dice_handler import DiceHandler
+from handlers.dice_handler import setup_dice_handlers
 from utils.helpers import setup_logging
 from config import settings
 
@@ -13,11 +13,7 @@ def main():
             raise ValueError("BOT_TOKEN не настроен")
         
         application = Application.builder().token(settings.BOT_TOKEN).build()
-        dice_handler = DiceHandler()
-        
-        application.add_handler(
-            MessageHandler(filters.TEXT & ~filters.COMMAND, dice_handler.handle_message)
-        )
+        setup_dice_handlers(application)
         
         logger.info("Bot started")
         print("Бот запущен! Ctrl+C для остановки")
