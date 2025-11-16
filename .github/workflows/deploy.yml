@@ -1,1 +1,37 @@
+name: Deploy Telegram Bot
 
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        pip install python-telegram-bot gspread google-auth python-dotenv
+        
+    - name: Create credentials from secrets
+      run: |
+        mkdir -p credentials
+        echo '${{ secrets.GOOGLE_CREDS_JSON }}' > credentials/service_account.json
+        
+    - name: Run bot
+      env:
+        BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID }}
+        SHEET_NAME: ${{ secrets.SHEET_NAME }}
+        ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+      run: |
+        python main.py
